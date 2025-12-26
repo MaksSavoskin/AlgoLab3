@@ -58,9 +58,39 @@ namespace QuickSort {
     }
 
     template<typename T, typename Compare>
+    void quick_sort_param(T* first, T* last, Compare comp, std::size_t INSERTION_THRESHOLD) {
+        while (last - first > INSERTION_THRESHOLD) {
+            T* mid = first + (last - first) / 2;
+            T pivot = median_of_three(*first, *mid, *last, comp);
+
+            T* p = partition(first, last, pivot, comp);
+
+            if (p - first < last - p) {
+                quick_sort_param(first, p, comp, INSERTION_THRESHOLD);
+                first = p + 1;
+            }
+            else {
+                quick_sort_param(p + 1, last, comp, INSERTION_THRESHOLD);
+                last = p;
+            }
+        }
+
+        if (first < last) {
+            insertion_sort(first, last, comp);
+        }
+    }
+
+    template<typename T, typename Compare>
+    void sort_param(T* first, T* last, Compare comp, std::size_t INSERTION_THRESHOLD = 16) {
+        if (first == nullptr || last == nullptr || first >= last) {
+            return;
+        }
+        quick_sort_param(first, last - 1, comp, INSERTION_THRESHOLD);
+    }
+
+    template<typename T, typename Compare>
     void quick_sort(T* first, T* last, Compare comp) {
         constexpr std::size_t INSERTION_THRESHOLD = 16;
-\
         while (last - first > INSERTION_THRESHOLD) {
             T* mid = first + (last - first) / 2;
             T pivot = median_of_three(*first, *mid, *last, comp);
